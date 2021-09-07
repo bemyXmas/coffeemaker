@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 /**
  * Unit tests for Inventory class.
  *
- * @author Peerasu Watanasirang
+ * @author Sirapop Kunjiak
  */
 
 public class InventoryTest {
