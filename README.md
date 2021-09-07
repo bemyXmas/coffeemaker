@@ -1,4 +1,4 @@
-# coffemaker
+# coffeemaker
 
 [List of test cases](https://github.com/bemyXmas/coffemaker/wiki/List-of-test-cases)
 
