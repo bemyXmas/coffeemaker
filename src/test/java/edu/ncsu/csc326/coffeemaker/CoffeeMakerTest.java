@@ -244,4 +244,25 @@ public class CoffeeMakerTest {
 		assertEquals("Coffee: 10\nMilk: 13\nSugar: 9\nChocolate: 15\n", coffeeMaker.checkInventory());
 	}
 
+	/**
+	 * Make a coffee with null recipe
+	 * Then we get our money back.
+	 */
+	@Test
+	public void testMakeCoffeeWithNullRecipe() {
+		int change = coffeeMaker.makeCoffee(0, 100);
+		assertEquals(100, change);
+	}
+
+	/**
+	 * When we make a coffee, if there is not enough inventory to make a coffee
+	 * Then we will get our money back.
+	 */
+	@Test
+	public void testNotEnoughInventory() {
+		coffeeMaker.addRecipe(recipe2);
+		int change = coffeeMaker.makeCoffee(0, 75);
+		assertEquals(75, change);
+	}
+
 }
