@@ -18,13 +18,13 @@
  */
 package edu.ncsu.csc326.coffeemaker;
 
-import static org.junit.Assert.*;
-
+import edu.ncsu.csc326.coffeemaker.exceptions.InventoryException;
+import edu.ncsu.csc326.coffeemaker.exceptions.RecipeException;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.ncsu.csc326.coffeemaker.exceptions.InventoryException;
-import edu.ncsu.csc326.coffeemaker.exceptions.RecipeException;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for CoffeeMaker class.
@@ -37,6 +37,10 @@ public class CoffeeMakerTest {
 	 * The object under test.
 	 */
 	private CoffeeMaker coffeeMaker;
+	private CoffeeMaker mockCoffeeMaker;
+	private RecipeBook mockRecipeBook;
+	private Recipe[] recipeList;
+	private Inventory inventory;
 	
 	// Sample recipes to use in testing.
 	private Recipe recipe1;
@@ -90,6 +94,12 @@ public class CoffeeMakerTest {
 		recipe4.setAmtMilk("1");
 		recipe4.setAmtSugar("1");
 		recipe4.setPrice("65");
+
+		mockRecipeBook = mock(RecipeBook.class);
+		inventory = new Inventory();
+
+		recipeList = new Recipe[]{recipe1, recipe2, recipe3, recipe4};
+		mockCoffeeMaker = new CoffeeMaker(mockRecipeBook, inventory);
 	}
 
 	/**
@@ -265,4 +275,82 @@ public class CoffeeMakerTest {
 		assertEquals(75, change);
 	}
 
+	/**
+	 * Test the amount of times getRecipes() is being called.
+	 */
+	@Test
+	public void testMockPurchaseBevWithEnoughIngredientAndEnoughMoney() {
+		when(mockRecipeBook.getRecipes()).thenReturn(recipeList);
+		int change = mockCoffeeMaker.makeCoffee(0, 60);
+		assertEquals(10, change);
+		verify(mockRecipeBook, times(4)).getRecipes();
+	}
+
+	/**
+	 * Test the amount of times getRecipes() is being called.
+	 */
+	@Test
+	public void testMockPurchaseBevWithNotEnoughMoney() {
+		when(mockRecipeBook.getRecipes()).thenReturn(recipeList);
+		int change = mockCoffeeMaker.makeCoffee(0, 50);
+		assertEquals(0, change);
+		verify(mockRecipeBook, times(4)).getRecipes();
+	}
+
+	/**
+	 * Test the amount of times getRecipes() is being called.
+	 */
+	@Test
+	public void testMockPurchaseBevWithNotEnoughMoneyAndNotEnoughIngredient() {
+		when(mockRecipeBook.getRecipes()).thenReturn(recipeList);
+		int change = mockCoffeeMaker.makeCoffee(0, 45);
+		assertEquals(45, change);
+		verify(mockRecipeBook, times(2)).getRecipes();
+	}
+
+	/**
+	 * Test the amount of times getRecipes() is being called.
+	 */
+	@Test
+	public void testMockPurchaseBevWithNotEnoughIngredient() {
+		when(mockRecipeBook.getRecipes()).thenReturn(recipeList);
+		int change = mockCoffeeMaker.makeCoffee(1, 95);
+		assertEquals(95, change);
+		verify(mockRecipeBook, times(3)).getRecipes();
+	}
+
+	/**
+	 * Test the amount of times getRecipes() is being called.
+	 */
+	@Test
+	public void testMockPurchaseBevWithNoRecipe() {
+		when(mockRecipeBook.getRecipes()).thenReturn(recipeList);
+		int change = mockCoffeeMaker.makeCoffee(2, 40);
+		assertEquals(40, change);
+		verify(mockRecipeBook, times(2)).getRecipes();
+	}
+
+	/**
+	 * The units of each items in the inventory are displayed (string)
+	 * default amount of all ingredients are 15
+	 */
+	@Test
+	public void testMockInventoryWhenBevIsPurchase() {
+		when(mockRecipeBook.getRecipes()).thenReturn(recipeList);
+		mockCoffeeMaker.makeCoffee(0, 100);
+		StringBuffer s1 = new StringBuffer();
+		s1.append("Coffee: ");
+		s1.append("12");
+		s1.append("\n");
+		s1.append("Milk: ");
+		s1.append("14");
+		s1.append("\n");
+		s1.append("Sugar: ");
+		s1.append("14");
+		s1.append("\n");
+		s1.append("Chocolate: ");
+		s1.append("15");
+		s1.append("\n");
+		assertEquals(s1.toString(), mockCoffeeMaker.checkInventory());
+	}
 }
